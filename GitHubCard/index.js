@@ -5,17 +5,32 @@
 function getGithubUsers(url) {
   const cards = document.querySelector('.cards');
   axios.get(url)
-  .then(response => {
-    cards.appendChild(createCard(response.data));
-    return axios.get(response.data.followers_url);
+  .then(res => {
+    cards.appendChild(createCard(res.data));
+    new GitHubCalendar(`.${res.data.login}`, `${res.data.login}`, { responsive: true });
+    return axios.get(res.data.followers_url);
   })
   .then(response => {
     const followers = response.data;
-    followers.forEach(data => {
-      cards.appendChild(createCard(data));
+    return followers.map(follower => {
+      return axios.get(follower.url)
+      .then(res => {
+        return res.data;
+      })
+    })
+  })
+  .then(resArr => {
+    resArr.forEach(res => {
+      res.then(data => {
+        const username = data.login;
+        const newCard = createCard(data);
+        cards.appendChild(newCard);
+        new GitHubCalendar(`.${data.login}`, `${username}`, { responsive: true });
+      })
     })
   })
 }
+
 
 /* Step 2: Inspect and study the data coming back, this is YOUR 
    github info! You will need to understand the structure of this 
@@ -75,6 +90,11 @@ function createCard(data){
   const cardInfo = document.createElement('div');
   cardInfo.classList.add('card-info');
   card.appendChild(cardInfo);
+
+  const contributions = document.createElement('div');
+  contributions.classList.add('calendar', `${data.login}`);
+  contributions.textContent = "Loading the data just for you...";
+  card.appendChild(contributions);
 
   const name = document.createElement('h3');
   name.classList.add('name');

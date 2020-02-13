@@ -92,6 +92,8 @@ body {
 }
 
 .card {
+  display: flex;
+  flex-wrap: wrap;
   width: 100%;
   padding: 20px;
   display: flex;
@@ -121,6 +123,10 @@ body {
   font-size: 1.8rem;
   font-style: italic;
   margin: 3px 0 10px;
+}
+
+.card .calendar{
+  width: 100%;
 }
 
 
